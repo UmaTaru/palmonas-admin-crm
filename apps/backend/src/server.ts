@@ -6,6 +6,7 @@ import { seedAdminUser } from "./database/seed";
 import { configService } from "./config/config.service";
 import { seedDefaultConfigs } from "./database/seed";
 
+
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;

@@ -5,6 +5,8 @@ import pinoHttp from "pino-http";
 import pino from "pino";
 import authRoutes from "./modules/auth/auth.routes";
 import { authMiddleware } from "./middleware/auth.middleware";
+import { authorize } from "./middleware/access_control.middleware";
+import webhookRoutes from "./routes/webhook.routes";
 
 const app = express();
 
@@ -22,9 +24,19 @@ app.use(cors());
 // Body parsing
 app.use(express.json());
 
+// FOR TESTING PURPOSES
 app.get("/protected", authMiddleware, (req, res) => {
   res.json({ message: "You are authenticated" });
 });
+
+app.get(
+  "/admin-only",
+  authMiddleware,
+  authorize("SUPER_ADMIN"),
+  (req, res) => {
+    res.json({ message: "Admin access granted" });
+  }
+);
 
 
 // Health check
@@ -38,5 +50,7 @@ app.get("/health", (req, res) => {
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/webhooks", webhookRoutes);
+
 
 export default app;
