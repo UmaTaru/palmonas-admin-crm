@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 import app from "./app";
 import { checkDatabaseConnection } from "./database/pool";
+import { runMigrations } from "./database/migrate";
+import { seedAdminUser } from "./database/seed";
+import { configService } from "./config/config.service";
+import { seedDefaultConfigs } from "./database/seed";
 
 dotenv.config();
 
@@ -12,6 +16,10 @@ const startServer = async () => {
   try {
     // 🔹 Validate database connection before starting server
     await checkDatabaseConnection();
+    await runMigrations();
+    await seedAdminUser();
+    await seedDefaultConfigs();
+    await configService.load();
 
     // 🔹 Start HTTP server only after DB is healthy
     server = app.listen(PORT, () => {
