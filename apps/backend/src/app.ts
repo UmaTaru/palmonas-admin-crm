@@ -7,6 +7,7 @@ import authRoutes from "./modules/auth/auth.routes";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { authorize } from "./middleware/access_control.middleware";
 import webhookRoutes from "./routes/webhook.routes";
+import ordersRoutes from "./modules/orders/orders.routes";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.get("/health", (req, res) => {
 // Routes
 app.use("/auth", authRoutes);
 app.use("/webhooks", webhookRoutes);
+app.use('/orders', ordersRoutes)
 
 
 export default app;
