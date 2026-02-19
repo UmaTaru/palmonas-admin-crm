@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
     order_number BIGINT UNIQUE NOT NULL,
 
     external_order_id VARCHAR(255),
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS orders (
     UNIQUE (external_order_id, channel)
 );
 
+
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_channel ON orders(channel);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
@@ -45,15 +47,16 @@ CREATE TABLE IF NOT EXISTS order_status_history (
     order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
     old_status VARCHAR(50),
     new_status VARCHAR(50),
-    changed_by VARCHAR(255) NULL,
-    changed_by_email VARCHAR(255) NULL,
+    changed_by VARCHAR(255),
+    changed_by_email VARCHAR(255),
     changed_at TIMESTAMP DEFAULT NOW()
 );
+
 
 -- Sync logs
 CREATE TABLE IF NOT EXISTS channel_sync_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_id UUID REFERENCES orders(id),
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
     channel VARCHAR(50),
     status VARCHAR(50),
     error_message TEXT,
@@ -82,3 +85,4 @@ CREATE TABLE IF NOT EXISTS order_items (
 
     created_at TIMESTAMP DEFAULT NOW()
 );
+

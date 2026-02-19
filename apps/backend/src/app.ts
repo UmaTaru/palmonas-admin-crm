@@ -11,8 +11,14 @@ import ordersRoutes from "./modules/orders/orders.routes";
 import { requestIdMiddleware } from "./middleware/request-id.middleware";
 import { pool } from "./database/pool";
 import { sanitizeBody } from "./utils/logger";
+import { apiLimiter } from "./middleware/rate-limit.middleware";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
+
 
 const app = express();
+
+app.use(apiLimiter);
 
 app.use(requestIdMiddleware);
 
@@ -74,7 +80,8 @@ app.get("/health", async (req, res) => {
 // Routes
 app.use("/auth", authRoutes);
 app.use("/webhooks", webhookRoutes);
-app.use('/orders', ordersRoutes)
+app.use('/orders', ordersRoutes);
 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
