@@ -14,11 +14,31 @@ import { sanitizeBody } from "./utils/logger";
 import { apiLimiter } from "./middleware/rate-limit.middleware";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
-
+import { redis } from "./cache/redis";
 
 const app = express();
 
-app.use(apiLimiter);
+// Health check
+app.get("/health", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.status(200).json({
+      status: "UP",
+      uptime: process.uptime(),
+      database: "CONNECTED",
+      redis: redis.status,
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    res.status(500).json({
+      status: "DOWN",
+      database: "DISCONNECTED",
+      redis: redis.status,
+    });
+  }
+});
+
+// app.use(apiLimiter);
 
 app.use(requestIdMiddleware);
 
@@ -40,11 +60,12 @@ app.use(
   })
 );
 
-
-
 // Security middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 
 // Body parsing
 app.use(express.json());
@@ -57,25 +78,6 @@ app.get(
     res.json({ message: "Admin access granted" });
   }
 );
-
-// Health check
-app.get("/health", async (req, res) => {
-  try {
-    await pool.query("SELECT 1");
-
-    res.status(200).json({
-      status: "UP",
-      uptime: process.uptime(),
-      database: "CONNECTED",
-      timestamp: new Date().toISOString(),
-    });
-  } catch {
-    res.status(500).json({
-      status: "DOWN",
-      database: "DISCONNECTED",
-    });
-  }
-});
 
 // Routes
 app.use("/auth", authRoutes);

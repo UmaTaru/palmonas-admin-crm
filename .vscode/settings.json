@@ -1,0 +1,14 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.exclude": [
+    "**/node_modules/**",
+    "**/node_modules/express-rate-limit/tsconfig.json"
+  ],
+  "files.exclude": {
+    "**/node_modules/express-rate-limit/tsconfig.json": true
+  },
+  "search.exclude": {
+    "**/node_modules/express-rate-limit/tsconfig.json": true
+  }
+}

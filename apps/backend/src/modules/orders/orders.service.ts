@@ -3,13 +3,23 @@ import { OrdersRepository, OrderFilters } from "./orders.repository";
 import { pool } from "../../database/pool";
 import { AmazonAdapter } from "../integrations/amazon/amazon.adapter";
 import { BlinkitAdapter } from "../integrations/blinkit/blinkit.adapter";
+import { cacheService } from "../../cache/cache.service";
 
 export class OrdersService {
 
   private repository = new OrdersRepository();
 
   async getOrders(filters: OrderFilters) {
-    return this.repository.findAll(filters);
+    const cacheKey = `orders:${filters.page}:${filters.limit}:${filters.status}`;
+    const cachedOrders = await cacheService.get(cacheKey);
+    if (cachedOrders) {
+      console.log("✅ Cached orders found");
+      return cachedOrders;
+    }
+    const orders = await this.repository.findAll(filters);
+    await cacheService.set(cacheKey, orders, 60 * 60);
+    console.log("✅ Orders cached");
+    return orders;
   }
 
   async getOrderById(orderId: string, req: Request) {

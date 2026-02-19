@@ -3,7 +3,7 @@ import rateLimit from "express-rate-limit";
 // Global API limiter
 export const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 5, // 100 requests / minute
+  max: 100, // 100 requests / minute
   standardHeaders: true,
   legacyHeaders: false,
   message: {

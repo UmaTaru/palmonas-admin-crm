@@ -16,6 +16,7 @@ export class OrdersController {
   async getOrders(req: Request, res: Response) {
     try {
       const orders = await service.getOrders(req.query as any);
+      
       return res.status(200).json(orders);
     } catch {
       return res.status(500).json({ message: "Failed to fetch orders" });

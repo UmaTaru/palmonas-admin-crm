@@ -74,13 +74,14 @@ services:
       context: ./apps/frontend
       dockerfile: Dockerfile
     container_name: palmonas-frontend
-    restart: unless-stopped
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
+      - "5173:5173"
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
+
 
 volumes:
   postgres_data:

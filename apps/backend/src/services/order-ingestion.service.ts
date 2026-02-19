@@ -22,11 +22,14 @@ export class OrderIngestionService {
         return { message: "Order already exists" };
       }
 
+      const orderNumber = this.generateRandomTenDigitNumber();
+
       // 2️⃣ Insert order
       const { rows } = await client.query(
         `
         INSERT INTO orders (
           external_order_id,
+          order_number,
           channel,
           customer_email,
           customer_name,
@@ -39,11 +42,12 @@ export class OrderIngestionService {
           payment_mode,
           balance_payment
         )
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
         RETURNING *
         `,
         [
           orderData.external_order_id,
+          orderNumber,
           orderData.channel,
           orderData.customer_email,
           orderData.customer_name,
@@ -117,4 +121,11 @@ export class OrderIngestionService {
       client.release();
     }
   }
+
+  generateRandomTenDigitNumber(): number {
+    const min = 1000000000;
+    const max = 9999999999;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
 }

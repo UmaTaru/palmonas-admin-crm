@@ -74,15 +74,15 @@ export class OrdersRepository {
 
   async updateStatus(orderId: string, newStatus: string) {
     const { rows } = await pool.query(
-      `
-      UPDATE orders
-      SET status = $1,
-          updated_at = NOW()
-      WHERE id = $2
-      RETURNING *
-      `,
-      [newStatus, orderId]
-    );
+    `
+    UPDATE orders
+    SET status = $1,
+        updated_at = NOW()
+    WHERE id = $2
+    RETURNING *
+    `,
+    [newStatus, orderId]
+  );
 
     return rows[0];
   }
