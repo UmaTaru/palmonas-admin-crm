@@ -1,5 +1,8 @@
+import { Request } from "express";
 import { OrdersRepository, OrderFilters } from "./orders.repository";
 import { pool } from "../../database/pool";
+import { AmazonAdapter } from "../integrations/amazon/amazon.adapter";
+import { BlinkitAdapter } from "../integrations/blinkit/blinkit.adapter";
 
 export class OrdersService {
 
@@ -9,12 +12,15 @@ export class OrdersService {
     return this.repository.findAll(filters);
   }
 
-  async getOrderById(orderId: string) {
+  async getOrderById(orderId: string, req: Request) {
     const order = await this.repository.findById(orderId);
     if (!order) throw new Error("Order not found");
 
     const history = await this.repository.getStatusHistory(orderId);
-
+    req.log.info({
+      orderId,
+      action: "ORDER_FOUND"
+    });
     return { order, history };
   }
 
@@ -22,7 +28,8 @@ export class OrdersService {
     orderId: string,
     newStatus: string,
     userId: number,
-    userEmail: string
+    userEmail: string,
+    req: Request
   ) {
     const client = await pool.connect();
 
@@ -61,10 +68,46 @@ export class OrdersService {
 
       await client.query("COMMIT");
 
+      const adapters: Record<string, any> = {
+        amazon: AmazonAdapter,
+        blinkit: BlinkitAdapter,
+      };
+
+      const AdapterClass = adapters[updated.channel];
+
+      if (AdapterClass) {
+      try {
+        const adapter = new AdapterClass();
+        await adapter.updateOrderStatus(
+          updated.external_order_id,
+          newStatus
+        );
+      } catch (error: any) {
+        req.log.error({
+          error: `[updateOrderStatus][${updated.channel}] ${error.message}`,
+          stack: error.stack,
+          orderId
+        });
+      }
+    }
+
+    req.log.info({
+      orderId,
+      action: "ORDER_UPDATED",
+      oldStatus,
+      newStatus,
+      userEmail
+    });
+
       return updated;
 
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK");
+      req.log.error({
+        error: `[updateOrderStatus] ${error.message}`,
+        stack: error.stack,
+        orderId
+      });
       throw error;
     } finally {
       client.release();

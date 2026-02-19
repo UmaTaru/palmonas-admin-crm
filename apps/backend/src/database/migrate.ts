@@ -46,7 +46,7 @@ export const runMigrations = async () => {
     }
 
     console.log("🎉 All migrations up to date.");
-  } catch (error) {
+  } catch (error: any) {
     await client.query("ROLLBACK");
     console.error("❌ Migration failed:", error);
     process.exit(1);

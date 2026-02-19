@@ -33,9 +33,6 @@ export class AuthService {
       [email]
     );
 
-    console.log("Login attempt:", email);
-    console.log("User rows:", rows);
-
     if (rows.length === 0) {
       throw new Error("Row length is 0");
     }
@@ -47,8 +44,6 @@ export class AuthService {
     if (!isMatch) {
       throw new Error("Not Match credentials");
     }
-
-    console.log("isMatch:", isMatch);
 
     const accessExpirySeconds = Number(
       configService.get("ACCESS_TOKEN_EXPIRY")

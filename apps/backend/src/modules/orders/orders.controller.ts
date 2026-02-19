@@ -25,7 +25,7 @@ export class OrdersController {
   async getOrderById(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const result = await service.getOrderById(`${id}`);
+      const result = await service.getOrderById(`${id}`, req);
       return res.status(200).json(result);
     } catch (error: any) {
       return res.status(404).json({ message: error.message });
@@ -45,7 +45,8 @@ export class OrdersController {
         `${id}`,
         status,
         req.user!.userId,
-        req.user!.email
+        req.user!.email,
+        req
       );
 
       return res.status(200).json(updated);

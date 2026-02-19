@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id SERIAL PRIMARY KEY,
+    order_number BIGINT UNIQUE NOT NULL,
 
     external_order_id VARCHAR(255),
     channel VARCHAR(50) NOT NULL,

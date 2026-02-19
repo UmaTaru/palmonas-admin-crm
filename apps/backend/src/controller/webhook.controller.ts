@@ -16,7 +16,7 @@ export class WebhookController {
 
       const transformer = getTransformer(`${channel}`);
 
-      const canonicalOrder = transformer.transform(req.body);
+      const canonicalOrder = transformer.transform(req.body, req);
 
       const result = await ingestionService.ingestOrder(canonicalOrder);
 
@@ -26,6 +26,10 @@ export class WebhookController {
       });
 
     } catch (error: any) {
+      req.log.error({
+        error: `[handleWebhook][${req.params.channel}] ${error.message}`,
+        stack: error.stack
+      });
       return res.status(400).json({
         message: error.message || "Webhook processing failed",
       });

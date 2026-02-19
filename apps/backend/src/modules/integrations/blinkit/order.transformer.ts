@@ -1,8 +1,14 @@
 import { OrderTransformer } from "../../../templates/transformer.interface";
 import { CanonicalOrder } from "../../../templates/order.template";
+import { Request } from "express";
 
 export class BlinkitTransformer implements OrderTransformer {
-  transform(payload: any): CanonicalOrder {
+  transform(payload: any, req: Request): CanonicalOrder {
+    req.log.info({
+      channel: "blinkit",
+      orderId: `${payload.orderId}`,
+      payload: payload,
+    })
     return {
       external_order_id: payload.orderId,
       channel: "blinkit",
