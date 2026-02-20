@@ -8,6 +8,7 @@ import { authMiddleware } from "./middleware/auth.middleware";
 import { authorize } from "./middleware/access_control.middleware";
 import webhookRoutes from "./routes/webhook.routes";
 import ordersRoutes from "./modules/orders/orders.routes";
+import logsRoutes from "./modules/logs/logs.routes";
 import { requestIdMiddleware } from "./middleware/request-id.middleware";
 import { pool } from "./database/pool";
 import { sanitizeBody } from "./utils/logger";
@@ -94,6 +95,7 @@ app.get(
 app.use("/auth", authRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/logs', logsRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

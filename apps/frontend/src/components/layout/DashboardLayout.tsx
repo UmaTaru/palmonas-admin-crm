@@ -32,6 +32,13 @@ export default function DashboardLayout({ children }: Props) {
     System Health
   </Link>
 
+  <Link
+    to="/logs"
+    className="block opacity-80 hover:opacity-100"
+  >
+    Logs
+  </Link>
+
 </nav>
 
 

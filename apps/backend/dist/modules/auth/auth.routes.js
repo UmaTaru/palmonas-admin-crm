@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_controller_1 = require("./auth.controller");
+const rate_limit_middleware_1 = require("../../middleware/rate-limit.middleware");
+const router = (0, express_1.Router)();
+const controller = new auth_controller_1.AuthController();
+router.post("/login", rate_limit_middleware_1.authLimiter, (req, res) => controller.login(req, res));
+router.post("/refresh", (req, res) => controller.refresh(req, res));
+exports.default = router;

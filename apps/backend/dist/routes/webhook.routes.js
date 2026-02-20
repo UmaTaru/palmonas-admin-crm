@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const webhook_controller_1 = require("../controller/webhook.controller");
+const webhook_auth_middleware_1 = require("../middleware/webhook-auth.middleware");
+const rate_limit_middleware_1 = require("../middleware/rate-limit.middleware");
+const router = (0, express_1.Router)();
+const controller = new webhook_controller_1.WebhookController();
+router.post("/:channel", webhook_auth_middleware_1.webhookAuth, rate_limit_middleware_1.webhookLimiter, controller.handleWebhook.bind(controller));
+exports.default = router;
