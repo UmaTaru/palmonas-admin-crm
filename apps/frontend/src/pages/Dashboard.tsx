@@ -1,7 +1,5 @@
 import DashboardLayout from "../components/layout/DashboardLayout";
 import OrdersTable from "../components/orders/OrdersTable";
-import { Link } from "react-router-dom";
-
 
 export default function Dashboard() {
   return (

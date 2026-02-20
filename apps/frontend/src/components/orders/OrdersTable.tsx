@@ -8,6 +8,7 @@ interface Order {
   customer_name: string;
   external_order_id: string;
   id: string;
+  created_at: string;
 }
 
 export default function OrdersTable() {
@@ -114,20 +115,32 @@ async function updateStatus(
 
         <thead className="border-b bg-gray-50">
           <tr>
-            <th className="p-3 text-left">Order</th>
+            <th className="p-3 text-left">Date</th>
+            <th className="p-3 text-left">Order ID</th>
             <th className="p-3 text-left">Channel</th>
-            <th className="p-3 text-left">Customer</th>
+            <th className="p-3 text-left">Customer Name</th>
             <th className="p-3 text-left">Amount</th>
             <th className="p-3 text-left">Status</th>
           </tr>
         </thead>
 
         <tbody>
-          {orders.map((order) => (
+          {orders.map((order: Order) => (
             <tr
               key={order.id}
               className="border-b hover:bg-gray-50"
             >
+              <td className="p-3 font-medium">
+                {new Date(order.created_at).toLocaleString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true
+                })}
+              </td>
+
               <td className="p-3 font-medium">
                 {order.external_order_id || order.id}
               </td>
