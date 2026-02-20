@@ -208,174 +208,22 @@ flowchart TD
     class GENERATE,MIDDLEWARE,AUTHORIZE process
 ```
 
-## 5. Deployment Architecture
+## 📊 Architecture Highlights
 
-```mermaid
-graph TB
-    subgraph "Docker Environment"
-        subgraph "Frontend Container"
-            FE[React App<br/>Vite Dev Server<br/>Port: 5173]
-        end
-        
-        subgraph "Backend Container"
-            BE[Express API<br/>Node.js<br/>Port: 4000]
-        end
-        
-        subgraph "Worker Container"
-            WK[Background Worker<br/>BullMQ Consumer]
-        end
-        
-        subgraph "Database Container"
-            DB[(PostgreSQL 15<br/>Port: 5432)]
-        end
-        
-        subgraph "Cache Container"
-            RD[(Redis 7<br/>Port: 6379)]
-        end
-    end
-    
-    subgraph "External Services"
-        EXT[External APIs<br/>Webhooks<br/>Order Channels]
-    end
-    
-    subgraph "Development Tools"
-        K6[K6 Load Tests]
-        LOGS[Docker Logs]
-        HEALTH[Health Checks]
-    end
-    
-    FE --> BE
-    BE --> DB
-    BE --> RD
-    WK --> DB
-    WK --> RD
-    EXT --> BE
-    K6 --> BE
-    
-    DB -.->|Health Check| HEALTH
-    RD -.->|Health Check| HEALTH
-    BE -.->|Logs| LOGS
-    WK -.->|Logs| LOGS
-    
-    classDef container fill:#e3f2fd
-    classDef database fill:#e8f5e8
-    classDef external fill:#fff3e0
-    classDef tools fill:#f3e5f5
-    
-    class FE,BE,WK container
-    class DB,RD database
-    class EXT external
-    class K6,LOGS,HEALTH tools
-```
-
-## 6. Background Job Processing Flow
-
-```mermaid
-flowchart LR
-    subgraph "API Layer"
-        API[Express API]
-    end
-    
-    subgraph "Queue System"
-        REDIS[(Redis)]
-        QUEUE[BullMQ Queue]
-    end
-    
-    subgraph "Worker Process"
-        WORKER[Background Worker]
-        PROCESSOR[Job Processor]
-    end
-    
-    subgraph "Job Types"
-        ORDER_SYNC[Order Sync Jobs]
-        STATUS_UPDATE[Status Update Jobs]
-        NOTIFICATION[Notification Jobs]
-        CLEANUP[Cleanup Jobs]
-    end
-    
-    API --> QUEUE
-    QUEUE --> REDIS
-    REDIS --> WORKER
-    WORKER --> PROCESSOR
-    
-    PROCESSOR --> ORDER_SYNC
-    PROCESSOR --> STATUS_UPDATE
-    PROCESSOR --> NOTIFICATION
-    PROCESSOR --> CLEANUP
-    
-    ORDER_SYNC -.->|Success/Failure| REDIS
-    STATUS_UPDATE -.->|Success/Failure| REDIS
-    NOTIFICATION -.->|Success/Failure| REDIS
-    CLEANUP -.->|Success/Failure| REDIS
-```
-
-## 7. Security Architecture
-
-```mermaid
-graph TB
-    subgraph "Security Layers"
-        subgraph "Network Security"
-            CORS[CORS Policy<br/>Allowed Origins]
-            HELMET[Helmet.js<br/>Security Headers]
-        end
-        
-        subgraph "Authentication"
-            JWT[JWT Tokens<br/>Access + Refresh]
-            BCRYPT[Bcrypt<br/>Password Hashing]
-        end
-        
-        subgraph "Authorization"
-            RBAC[Role-Based Access<br/>SUPER_ADMIN]
-            MIDDLEWARE[Auth Middleware<br/>Route Protection]
-        end
-        
-        subgraph "Rate Limiting"
-            API_LIMIT[API Rate Limiting<br/>General Endpoints]
-            AUTH_LIMIT[Auth Rate Limiting<br/>Login Endpoints]
-        end
-        
-        subgraph "Input Validation"
-            ZOD[Zod Validation<br/>Request Schemas]
-            SANITIZE[Input Sanitization<br/>XSS Prevention]
-        end
-    end
-    
-    subgraph "Data Protection"
-        ENV[Environment Variables<br/>Secrets Management]
-        DB_CONN[Secure DB Connections<br/>Connection Pooling]
-    end
-    
-    CLIENT[Client Request] --> CORS
-    CORS --> HELMET
-    HELMET --> API_LIMIT
-    API_LIMIT --> AUTH_LIMIT
-    AUTH_LIMIT --> JWT
-    JWT --> RBAC
-    RBAC --> MIDDLEWARE
-    MIDDLEWARE --> ZOD
-    ZOD --> SANITIZE
-    SANITIZE --> DB_CONN
-```
-
-## Architecture Decisions & Rationale
-
-### Technology Choices
-- **React + TypeScript**: Type safety and modern UI development
-- **Express.js**: Lightweight, flexible Node.js framework
-- **PostgreSQL**: ACID compliance for order data integrity
-- **Redis**: Fast caching and job queue management
-- **BullMQ**: Robust background job processing
-- **Docker**: Consistent development and deployment environment
-
-### Scalability Considerations
-- **Horizontal scaling**: Stateless API design allows multiple instances
-- **Database indexing**: Optimized queries for order lookups
-- **Caching strategy**: Redis for frequently accessed data
-- **Background processing**: Async job handling for heavy operations
+### Scalability Features
+- **Stateless API design** for horizontal scaling
+- **Background job processing** for async operations
+- **Redis caching** for performance optimization
+- **Database indexing** for query performance
 
 ### Security Measures
-- **JWT authentication**: Stateless, scalable auth mechanism
-- **Role-based access**: Granular permission control
-- **Rate limiting**: Protection against abuse
-- **Input validation**: Zod schemas prevent malicious input
-- **Security headers**: Helmet.js for common vulnerabilities
+- **JWT authentication** with refresh token rotation
+- **Role-based access control** (RBAC)
+- **Rate limiting** and request validation
+- **Secure password hashing** with bcrypt
+
+### Reliability Features
+- **Health checks** for all services
+- **Structured logging** with request tracing
+- **Error handling** with retry mechanisms
+- **Database transactions** for data consistency
