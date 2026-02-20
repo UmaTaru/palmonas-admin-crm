@@ -72,7 +72,7 @@ docker-compose logs -f
 ### 4. Default Admin Credentials
 ```bash
 Email: admin@palmonas.com
-Password: admin
+Password: admin123
 ```
 ### 5. Access the Application
 
