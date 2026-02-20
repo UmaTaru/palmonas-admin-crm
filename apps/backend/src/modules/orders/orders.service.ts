@@ -10,16 +10,27 @@ export class OrdersService {
   private repository = new OrdersRepository();
 
   async getOrders(filters: OrderFilters) {
-    const cacheKey = `orders:${filters.page}:${filters.limit}:${filters.status}`;
-    const cachedOrders = await cacheService.get(cacheKey);
-    if (cachedOrders) {
-      console.log("✅ Cached orders found");
-      return cachedOrders;
+    try {
+      console.log("🔍 Getting orders with filters:", filters);
+      
+      // Temporarily bypass cache to debug
+      const orders = await this.repository.findAll(filters);
+      console.log("✅ Orders fetched from DB:", orders.length, "records");
+      
+      // Try to cache (but don't fail if cache fails)
+      try {
+        const cacheKey = `orders:${filters.page}:${filters.limit}:${filters.status}`;
+        await cacheService.set(cacheKey, orders, 60 * 60);
+        console.log("✅ Orders cached successfully");
+      } catch (cacheError) {
+        console.error("⚠️ Cache error (continuing anyway):", cacheError);
+      }
+      
+      return orders;
+    } catch (error) {
+      console.error("❌ Error in getOrders:", error);
+      throw error;
     }
-    const orders = await this.repository.findAll(filters);
-    await cacheService.set(cacheKey, orders, 60 * 60);
-    console.log("✅ Orders cached");
-    return orders;
   }
 
   async getOrderById(orderId: string, req: Request) {
