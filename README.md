@@ -69,8 +69,12 @@ docker-compose up -d
 # View logs (optional)
 docker-compose logs -f
 ```
-
-### 4. Access the Application
+### 4. Default Admin Credentials
+```bash
+Email: admin@palmonas.com
+Password: admin
+```
+### 5. Access the Application
 
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:4000
