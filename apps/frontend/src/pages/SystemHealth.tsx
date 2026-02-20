@@ -8,8 +8,9 @@ export default function SystemHealth() {
 
   async function fetchHealth() {
     try {
+      console.log("Health API");
       const res = await api.get("/health");
-      console.log("Health API response:", res.data);
+      console.log("Health API response:", res);
       setHealth(res.data);
     } catch (error) {
       console.error("Health API error:", error);
@@ -19,9 +20,7 @@ export default function SystemHealth() {
 
   useEffect(() => {
     fetchHealth();
-
     const interval = setInterval(fetchHealth, 5000);
-
     return () => clearInterval(interval);
   }, []);
 

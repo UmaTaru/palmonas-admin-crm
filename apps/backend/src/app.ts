@@ -21,6 +21,10 @@ const app = express();
 // Health check
 app.get("/health", async (req, res) => {
   try {
+    // Explicitly set CORS headers for this endpoint
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
     await pool.query("SELECT 1");
     res.status(200).json({
       status: "UP",
@@ -60,11 +64,18 @@ app.use(
   })
 );
 
-// Security middleware
-app.use(helmet());
+// CORS middleware (before helmet to avoid conflicts)
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Length', 'X-Request-Id']
+}));
+
+// Security middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // Body parsing
